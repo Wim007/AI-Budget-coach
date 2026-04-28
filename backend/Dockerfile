@@ -6,7 +6,8 @@ RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+# npm install i.p.v. npm ci: geen package-lock.json aanwezig in de repo
+RUN npm install
 COPY . .
 RUN npm run build
 
@@ -19,8 +20,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package*.json ./
-# npm ci --omit=dev hercompileert better-sqlite3 voor deze Alpine-versie
-RUN npm ci --omit=dev
+# Hercompileert better-sqlite3 voor deze Alpine-versie
+RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
 

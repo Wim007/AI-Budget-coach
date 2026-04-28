@@ -26,6 +26,10 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/budget', budgetRoutes);
 app.use('/api/coach', coachRoutes);
 
+app.get('/', (_, res) =>
+  res.json({ message: 'AI Budgetcoach API', version: '1.0.0', docs: '/api/health' })
+);
+
 app.get('/api/health', (_, res) =>
   res.json({ status: 'ok', message: 'AI Budgetcoach API draait.' })
 );
