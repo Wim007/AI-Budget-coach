@@ -1,5 +1,4 @@
-version: '3.8'
-
+# Docker Compose v2 — geen 'version:' key (deprecated)
 services:
   backend:
     build:
@@ -11,7 +10,7 @@ services:
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET:-local-dev-secret-change-in-production}
       FRONTEND_URL: http://localhost:3000
-      NODE_ENV: development
+      NODE_ENV: production
     volumes:
       - backend_data:/app/data
 
@@ -19,10 +18,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        # Wordt ingebakken bij de build — moet de publiek bereikbare backend-URL zijn
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
     ports:
       - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3001
     depends_on:
       - backend
 

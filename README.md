@@ -83,11 +83,46 @@ npm run dev                  # draait op http://localhost:3000
 ### Met Docker Compose
 
 ```bash
-docker-compose up --build
+# Kopieer en pas aan:
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
+
+NEXT_PUBLIC_API_URL=http://localhost:3001 docker-compose up --build
 ```
 
 Frontend: http://localhost:3000  
 Backend API: http://localhost:3001
+
+### Deploy op Railway (monorepo)
+
+Dit is een monorepo met twee aparte Railway-services. Maak in Railway twee services aan en wijs elke service naar de juiste submap.
+
+**Stap 1 — Backend-service**
+
+1. Nieuw project → "Deploy from GitHub repo"
+2. Stel in: **Root Directory** → `backend`
+3. Railway detecteert `backend/railway.toml` en gebruikt de `Dockerfile`
+4. Voeg environment variables toe:
+   ```
+   JWT_SECRET=<lang-willekeurig-geheim>
+   FRONTEND_URL=https://<jouw-frontend>.railway.app
+   PORT=3001
+   NODE_ENV=production
+   ```
+5. Voeg een **Volume** toe op `/app/data` voor de SQLite-database
+
+**Stap 2 — Frontend-service**
+
+1. Voeg een tweede service toe aan hetzelfde project → zelfde repo
+2. Stel in: **Root Directory** → `frontend`
+3. Voeg environment variables toe:
+   ```
+   NEXT_PUBLIC_API_URL=https://<jouw-backend>.railway.app
+   ```
+   > Let op: `NEXT_PUBLIC_*` wordt ingebakken tijdens de Docker-build. Railway geeft deze automatisch mee als build argument als je ze als variabele instelt.
+
+**Waarom geen `start.sh`?**  
+De `CMD` in elke Dockerfile vervangt een start-script. Railway roept die direct aan — een shell-wrapper voegt niets toe.
 
 ## API-overzicht
 
